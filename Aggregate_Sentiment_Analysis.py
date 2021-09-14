@@ -69,18 +69,20 @@ def tweet_processing(text, spacy_stopwords):
 
 
 def get_tweets(keyword, noOfTweet):
-    tweets = tweepy.Cursor(api.search, q=keyword, lang="en").items(noOfTweet)
+    tweets = tweepy.Cursor(api.search, q=keyword, lang="en", tweet_mode = "extended").items(noOfTweet)
     tweet_list = []
     cleaned_tweets_list = []
     tweet_size = []
+    dates = []
     print("Obtained Tweets, moving to cleaning")
     for tweet in tweets:
-        tweet_list.append(tweet.text)
-        cleaned_tweet = tweet_cleaning(tweet.text, keyword)
+        tweet_list.append(tweet._json["full_text"])
+        dates.append(tweet.created_at)
+        cleaned_tweet = tweet_cleaning(tweet._json["full_text"], keyword)
         tweet_size.append(len(cleaned_tweet))
         cleaned_tweets_list.append(cleaned_tweet)
 
-    return tweet_list, cleaned_tweets_list, tweet_size
+    return tweet_list, cleaned_tweets_list, tweet_size, dates
 
 
 def replace_emoji(cleaned_tweets_list):
@@ -156,11 +158,12 @@ def sentiment_scores(sentence):
 print("Required functions created\n")
 keyword = input("Please enter keyword or hashtag to search: ")
 noOfTweet = int(input("Please enter how many tweets to analyze: "))
-tweet_list, cleaned_tweets_list, tweet_size = get_tweets(keyword, noOfTweet)
+tweet_list, cleaned_tweets_list, tweet_size, dates = get_tweets(keyword, noOfTweet)
 cleaned_tweets_list = replace_emoji(cleaned_tweets_list)
 print("Cleaned Tweets, calculating aggregate emotions")
-token_tweets_list, noun_phrases_list = data_generation(cleaned_tweets_list)
+token_tweets_list, noun_phrases_list = data_generation(cleaned_tweets_laist)
 print("Obtained tweets:", len(cleaned_tweets_list))
+
 overall_pos = 0
 overall_neg = 0
 overall_neu = 0
