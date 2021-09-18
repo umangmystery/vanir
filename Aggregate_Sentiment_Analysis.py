@@ -13,7 +13,9 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import math
 import en_core_web_sm
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import time
 print("Libraries Imported")
+start_time = time.time()
 
 consumerKey = "8udhSgxLFBH99zgN06DuSYOQi"
 consumerSecret = "pIPXXFRUqStC3Z6J1YMPdz7W4AwD8bioGK7hMueFdks7pm0OIc"
@@ -155,13 +157,12 @@ def sentiment_scores(sentence):
     return pos, neg, neu
 
 
-print("Required functions created\n")
 keyword = input("Please enter keyword or hashtag to search: ")
 noOfTweet = int(input("Please enter how many tweets to analyze: "))
 tweet_list, cleaned_tweets_list, tweet_size, dates = get_tweets(keyword, noOfTweet)
 cleaned_tweets_list = replace_emoji(cleaned_tweets_list)
 print("Cleaned Tweets, calculating aggregate emotions")
-token_tweets_list, noun_phrases_list = data_generation(cleaned_tweets_laist)
+token_tweets_list, noun_phrases_list = data_generation(cleaned_tweets_list)
 print("Obtained tweets:", len(cleaned_tweets_list))
 
 overall_pos = 0
@@ -179,11 +180,11 @@ print("Positive percentage = ", percentage(overall_pos, len(cleaned_tweets_list)
 print("Negative percentage = ", percentage(overall_neg, len(cleaned_tweets_list)))
 print("Neutral percentage = ", percentage(overall_neu, len(cleaned_tweets_list)))
 
-percentages = [percentage(overall_pos, len(cleaned_tweets_list)), percentage(overall_neg, len(cleaned_tweets_list)), percentage(overall_neu, len(cleaned_tweets_list))]
-labels_list = ['Positive','Negative','Neutral']
-fig = plt.figure(figsize=(10,7))
-plt.pie(percentages, labels=labels_list)
-plt.show()
+# percentages = [percentage(overall_pos, len(cleaned_tweets_list)), percentage(overall_neg, len(cleaned_tweets_list)), percentage(overall_neu, len(cleaned_tweets_list))]
+# labels_list = ['Positive','Negative','Neutral']
+# fig = plt.figure(figsize=(10,7))
+# plt.pie(percentages, labels=labels_list)
+# plt.show()
 
 
 emotion_dict_noun, emotion_counter_dict_noun, counter_noun, total_noun = aggregate_emotion(noun_phrases_list)
@@ -197,18 +198,19 @@ for k2, v2 in emotion_counter_dict_noun.items() :
     print("Emotion :", k2, "Percentage:", p)
     emotion_percentages.append(p)
 
-r = np.arange(len(emotion_counter_dict_noun))
-width = 0.25
-plt.bar(r, emotion_percentages, color = 'r',
-        width = width, edgecolor = 'black',
-        label='Emotion Percentages')
-plt.xticks(r + width/2,['Fear','Anger','Anticipation','Trust', 'Surprise', 'Positive', 'Negative', 'Sadness', 'Disgust', 'Joy'])
-plt.xlabel("Overall Emotions Detected")
-plt.ylabel("Number of tweets")
-plt.title("Sentiment Distributions")
-plt.legend()
-plt.show()
+# r = np.arange(len(emotion_counter_dict_noun))
+# width = 0.25
+# plt.bar(r, emotion_percentages, color = 'r',
+#         width = width, edgecolor = 'black',
+#         label='Emotion Percentages')
+# plt.xticks(r + width/2,['Fear','Anger','Anticipation','Trust', 'Surprise', 'Positive', 'Negative', 'Sadness', 'Disgust', 'Joy'])
+# plt.xlabel("Overall Emotions Detected")
+# plt.ylabel("Number of tweets")
+# plt.title("Sentiment Distributions")
+# plt.legend()
+# plt.show()
 
+print("------ TIme: ", time.time() - start_time)
 
 
 
@@ -217,7 +219,7 @@ plt.show()
 # print("\nThe aggregate of overall emotions for:", keyword)
 # for k3,v3 in emotion_dict_reg.items() :
 #     print("Emotion:", k3,"Score:", percentage(v3,total_reg))
-# print("\nThe percentage of overall emotions for:", keyword)
+# print("\nThe percentage of overall emotions for:", keywoiohrd)
 # for k4, v4 in emotion_counter_dict_noun.items() :
 #     print("Emotion :", k4, "Percentage:", percentage(v4,counter_reg))
 
