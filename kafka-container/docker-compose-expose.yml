@@ -5,7 +5,7 @@ services:
     ports:
      - "2181:2181"
   kafka:
-    build: .
+    image: wurstmeister/kafka
     ports:
      - "9092:9092"
     expose:
@@ -41,7 +41,17 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - "5050:80"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 9000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
 volumes:
   pgdata:
+
+  grafana-data:
+    external: true
 
 
