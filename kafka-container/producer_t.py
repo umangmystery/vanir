@@ -6,6 +6,10 @@
 # consumer_secret = ""
 
 
+consumer_key = "8udhSgxLFBH99zgN06DuSYOQi"
+consumer_secret = "pIPXXFRUqStC3Z6J1YMPdz7W4AwD8bioGK7hMueFdks7pm0OIc"
+access_token = "1083286165845954560-ceHxFmX1Rak89Y5UX7yFaJzOVnF97t"
+access_token_secret = "MN9dnShe69FTwc0KxsBn9ooQN4QGtJZtMlG1vRKgVdus0"
 
 
 from tweepy.streaming import StreamListener
@@ -71,5 +75,5 @@ class ListenerTS(StreamListener):
 
 
 if __name__ == "__main__":
-    TS = TwitterStreamer(stop_limit = 1000)
+    TS = TwitterStreamer(stop_limit = 20)
     TS.stream_tweets()
