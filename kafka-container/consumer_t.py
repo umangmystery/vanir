@@ -128,14 +128,14 @@ Variable_tableName = "aggregated_emotions"
 metadata = MetaData(engine)
 # Create a table with the appropriate Columns
 table = Table(Variable_tableName, metadata,
-      Column('Id', BIGINT, primary_key=True, nullable=False),
-      Column('Date Created', Date), Column('Clean Tweet', String),
-      Column('Sentiment', String), Column('Fear', Float),
-      Column('Anger', Float), Column('Anticipation', Float),
-      Column('Trust', Float), Column('Surprise', Float),
-      Column('Positive', Float), Column('Negative', Float),
-      Column('Sadness', Float), Column('Disgust', Float),
-      Column('Joy', Float))
+      Column('id', BIGINT, primary_key=True, nullable=False),
+      Column('date_created', Date), Column('clean_tweet', String),
+      Column('sentiment', String), Column('fear', Float),
+      Column('anger', Float), Column('anticipation', Float),
+      Column('trust', Float), Column('surprise', Float),
+      Column('positive', Float), Column('negative', Float),
+      Column('sadness', Float), Column('disgust', Float),
+      Column('joy', Float))
 # Implement the creation
 metadata.create_all(bind=None, tables=None, checkfirst=True)
 
@@ -151,41 +151,46 @@ for message in consumer:
     clean_text = tweet_cleaning(text)
     noun_phrases = tweet_processing(clean_text)
     polarity = sentiment_scores(clean_text)
-    emotion_dict, emotion_counter_dict, counter, total = aggregate_emotion(noun_phrases)
+    emotion_dict, emotion_counter_dict, counter, total = aggregate_emotion([noun_phrases])
+    # print("Emotion Counter Dict: ", emotion_counter_dict)
+    # print("Noun Phrases:", noun_phrases)
+    # print("Emotion Dict", emotion_dict)
 
+    try:
+        with engine.connect() as conn:
+            # ins = table.insert().values(Id= tweets['id'], Date_created= tweets['created_at'], clean_tweet= clean_text,
+            #                 "Sentiment"= polarity, "Fear": emotion_counter_dict['fear'],
+            #                 "Anger"=emotion_counter_dict['anger'],
+            #                 "Anticipation": emotion_counter_dict['anticip'], "Trust": emotion_counter_dict['trust'],
+            #                    "Surprise": emotion_counter_dict['surprise'], "Positive": emotion_counter_dict['positive'],
+            #                    "Negative": emotion_counter_dict['negative'], "Sadness": emotion_counter_dict['sadness'],
+            #                    "Disgust":emotion_counter_dict['disgust'], "Joy": emotion_counter_dict['joy'])
+            # conn.execute(ins)
+            result = conn.execute(insert(table),
+                       [
+                           {"id": tweets['id'], "date_created": tweets['created_at'], "clean_tweet": clean_text,
+                            "sentiment": polarity, "fear": emotion_counter_dict['fear'],
+                            "anger":emotion_counter_dict['anger'],
+                            "anticipation": emotion_counter_dict['anticip'], "trust": emotion_counter_dict['trust'],
+                               "surprise": emotion_counter_dict['surprise'], "positive": emotion_counter_dict['positive'],
+                               "negative": emotion_counter_dict['negative'], "sadness": emotion_counter_dict['sadness'],
+                               "disgust":emotion_counter_dict['disgust'], "joy": emotion_counter_dict['joy']
+                            }
+                       ])
 
-    with engine.connect() as conn:
-        # ins = table.insert().values(Id= tweets['id'], Date_created= tweets['created_at'], clean_tweet= clean_text,
-        #                 "Sentiment"= polarity, "Fear": emotion_counter_dict['fear'],
-        #                 "Anger"=emotion_counter_dict['anger'],
-        #                 "Anticipation": emotion_counter_dict['anticip'], "Trust": emotion_counter_dict['trust'],
-        #                    "Surprise": emotion_counter_dict['surprise'], "Positive": emotion_counter_dict['positive'],
-        #                    "Negative": emotion_counter_dict['negative'], "Sadness": emotion_counter_dict['sadness'],
-        #                    "Disgust":emotion_counter_dict['disgust'], "Joy": emotion_counter_dict['joy'])
-        # conn.execute(ins)
-        result = conn.execute(insert(table),
-                   [
-                       {"Id": tweets['id'], "Date Created": tweets['created_at'], "Clean tweet": clean_text,
-                        "Sentiment": polarity, "Fear": emotion_counter_dict['fear'],
-                        "Anger":emotion_counter_dict['anger'],
-                        "Anticipation": emotion_counter_dict['anticip'], "Trust": emotion_counter_dict['trust'],
-                           "Surprise": emotion_counter_dict['surprise'], "Positive": emotion_counter_dict['positive'],
-                           "Negative": emotion_counter_dict['negative'], "Sadness": emotion_counter_dict['sadness'],
-                           "Disgust":emotion_counter_dict['disgust'], "Joy": emotion_counter_dict['joy']
-                        }
-                   ])
-
-        # conn.commit()
-    # print(emotion_dict)
-    # try:
-    #     data_tuple = (tweets['id'], tweets['created_at'], clean_text, polarity,emotion_counter_dict['fear'],
-    #                   emotion_counter_dict['anger'], emotion_counter_dict['anticip'],emotion_counter_dict['trust'],
-    #                   emotion_counter_dict['surprise'], emotion_counter_dict['positive'], emotion_counter_dict['negative'],
-    #                   emotion_counter_dict['sadness'], emotion_counter_dict['disgust'], emotion_counter_dict['joy'])
-    #     # print(data_tuple)
-    #     # Inserting Raw Data in postgres table
-    #     cursor.execute(insert_query + str(data_tuple))
-    # except:
-    #     pass
-    # finally:
-    #     conn.commit()
+            # conn.commit()
+        # print(emotion_dict)
+        # try:
+        #     data_tuple = (tweets['id'], tweets['created_at'], clean_text, polarity,emotion_counter_dict['fear'],
+        #                   emotion_counter_dict['anger'], emotion_counter_dict['anticip'],emotion_counter_dict['trust'],
+        #                   emotion_counter_dict['surprise'], emotion_counter_dict['positive'], emotion_counter_dict['negative'],
+        #                   emotion_counter_dict['sadness'], emotion_counter_dict['disgust'], emotion_counter_dict['joy'])
+        #     # print(data_tuple)
+        #     # Inserting Raw Data in postgres table
+        #     cursor.execute(insert_query + str(data_tuple))
+        # except:
+        #     pass
+        # finally:
+        #     conn.commit()
+    except:
+        pass
