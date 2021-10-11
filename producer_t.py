@@ -75,5 +75,5 @@ class ListenerTS(StreamListener):
 
 
 if __name__ == "__main__":
-    TS = TwitterStreamer(stop_limit = 200)
+    TS = TwitterStreamer(stop_limit = 20)
     TS.stream_tweets()
